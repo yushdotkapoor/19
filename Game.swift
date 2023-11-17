@@ -10,15 +10,13 @@ import UIKit
 
 var levels: [Level] = [
     //        Level(answerType: .shortAnswer, body: UIImage(), question: "Solve this problem"),
-    Level(answerType: .multipleChoice, body: UIImage(), question: "Solve this second problem", options: [MCOption(text: "test 1", image: UIImage()), MCOption(text: "test 2", image: UIImage.checkmark, correct: true)]),
+    Level(answerType: .multipleChoice, body: UIImage.add, question: "Solve this second problem", options: [Option(text: "test 1", image: UIImage()), Option(text: "test 2", image: UIImage.checkmark, correct: true), Option(text: "test 3", image: UIImage()), Option(text: "test 4", image: UIImage(), correct: true)]),
     
 ]
 
 class Game: UIViewController {
     
     var level: Int!
-    
-    
     
     var optionViews: [UIView] = []
     
@@ -34,6 +32,7 @@ class Game: UIViewController {
     
     func persistantInitialize() {
         let scrollView = UIScrollView()
+        scrollView.backgroundColor = .brown
         
         let mainStack = UIStackView()
         mainStack.spacing = 20
@@ -53,7 +52,12 @@ class Game: UIViewController {
         
         mainStack.addArrangedSubview(bodyStack)
         
+        let bufferView = UIView()
+        
+        mainStack.addArrangedSubview(bufferView)
+        
         let answerStack = UIStackView()
+        answerStack.backgroundColor = .blue
         answerStack.tag = 3
         answerStack.spacing = 10
         answerStack.axis = .vertical
@@ -141,7 +145,7 @@ class Game: UIViewController {
         bodyStack.addArrangedSubview(questionLabel)
         
         let questionImage = UIImageView()
-        questionImage.image = lvl.body
+        questionImage.image = lvl.body.aspectFittedToWidth(bodyStack.bounds.width)
         
         bodyStack.addArrangedSubview(questionImage)
     }
@@ -150,7 +154,15 @@ class Game: UIViewController {
         let answerStack = getAnswerStackView()
         
         let lvl = levels[level-1]
-        if lvl.answerType == .shortAnswer {
+        
+        let commandLabel = UILabel()
+        commandLabel.numberOfLines = 0
+        commandLabel.text = lvl.answerType.command
+        
+        answerStack.insertArrangedSubview(commandLabel, at: 0)
+        
+        switch lvl.answerType {
+        case .shortAnswer:
             let textBox = UITextField()
             textBox.placeholder = "Answer"
             textBox.layer.borderWidth = 2
@@ -164,12 +176,13 @@ class Game: UIViewController {
             
             textBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
             
-            answerStack.insertArrangedSubview(textBox, at: 0)
-        } else if lvl.answerType == .multipleChoice {
+            answerStack.insertArrangedSubview(textBox, at: 1)
+        case .multipleChoice, .selection:
             var n = 0
             var hStack: UIStackView!
+            var rows = 0
             optionViews = []
-            for _ in lvl.options! {
+            for _ in lvl.options {
                 let outerButtonView = UIView()
                 outerButtonView.layer.cornerRadius = 10
                 outerButtonView.layer.borderWidth = 2
@@ -181,7 +194,7 @@ class Game: UIViewController {
                 let buttonStack = UIStackView()
                 buttonStack.distribution = .fillProportionally
                 buttonStack.axis = .horizontal
-                buttonStack.spacing = 5
+                buttonStack.spacing = 10
                 
                 let letterLabel = UILabel()
                 letterLabel.textColor = UIColor.link
@@ -226,18 +239,20 @@ class Game: UIViewController {
                     hStack.distribution = .fillEqually
                     hStack.spacing = 10
                     
-                    answerStack.insertArrangedSubview(hStack, at: 0)
+                    answerStack.insertArrangedSubview(hStack, at: rows + 1)
                     n += 1
                 } else {
                     n = 0
+                    rows += 1
                 }
                 
                 hStack.addArrangedSubview(outerButtonView)
                 hStack.layoutSubviews()
             }
             
+            
             for (i, optionView) in optionViews.enumerated() {
-                let option = lvl.options![i]
+                let option = lvl.options[i]
                 if let letterLabel = optionView.findView(withTag: 4) as? UILabel {
                     letterLabel.text = String(Character(UnicodeScalar(i + 65)!))
                 }
@@ -245,7 +260,7 @@ class Game: UIViewController {
                     buttonLabel.text = option.text
                 }
                 if let buttonImage = optionView.findView(withTag: 6) as? UIImageView {
-                    buttonImage.image = option.image
+                    buttonImage.image = option.image?.aspectFittedToWidth(optionView.bounds.width - 15)
                 }
                 optionView.tag = 10 + i
             }
@@ -253,16 +268,26 @@ class Game: UIViewController {
     }
     
     func submitPressed() {
-        var correctAnswers: [MCOption] = []
-        var answers: [MCOption] = []
         let lvl = levels[level-1]
-        for optionView in optionViews {
-            let MCOption = lvl.options![optionView.tag - 10]
-            if optionView.isHighlighted() {
-                answers.append(MCOption)
-            }
-            if MCOption.correct {
-                correctAnswers.append(MCOption)
+        
+        var correctAnswers: [Option] = []
+        var answers: [Option] = []
+        
+        switch lvl.answerType {
+        case .shortAnswer:
+            correctAnswers = lvl.options
+            
+            
+            
+        case .multipleChoice, .selection:
+            for optionView in optionViews {
+                let option = lvl.options[optionView.tag - 10]
+                if optionView.isHighlighted() {
+                    answers.append(option)
+                }
+                if option.correct {
+                    correctAnswers.append(option)
+                }
             }
         }
         
@@ -281,18 +306,27 @@ class Game: UIViewController {
         print("NO!")
         
         // incorrect solution
-        
     }
     
     
     @objc func handleMCTap(_ sender: UITapGestureRecognizer) {
         impact(style: .medium)
-        let highlighted = sender.view?.isHighlighted()
-        for optionView in optionViews {
-            optionView.removeHighlightLayer()
-        }
-        if !(highlighted ?? false) {
-            sender.view?.addHighlightLayer()
+        let lvl = levels[level-1]
+        if lvl.answerType == .selection {
+            let highlighted = sender.view?.isHighlighted() ?? false
+            if highlighted {
+                sender.view?.removeHighlightLayer()
+            } else {
+                sender.view?.addHighlightLayer()
+            }
+        } else if lvl.answerType == .multipleChoice {
+            let highlighted = sender.view?.isHighlighted()
+            for optionView in optionViews {
+                optionView.removeHighlightLayer()
+            }
+            if !(highlighted ?? false) {
+                sender.view?.addHighlightLayer()
+            }
         }
     }
     
@@ -422,4 +456,22 @@ func impact(style: UIImpactFeedbackGenerator.FeedbackStyle) {
 func impact(style: UINotificationFeedbackGenerator.FeedbackType) {
     let generator = UINotificationFeedbackGenerator()
     generator.notificationOccurred(style)
+}
+
+
+extension UIImage
+{
+    /// Given a required height, returns a (rasterised) copy
+    /// of the image, aspect-fitted to that height.
+
+    func aspectFittedToWidth(_ newWidth: CGFloat) -> UIImage {
+        let scale = newWidth / self.size.width
+        let newHeight = self.size.height * scale
+        let newSize = CGSize(width: newWidth, height: newHeight)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+
+        return renderer.image { _ in
+            self.draw(in: CGRect(origin: .zero, size: newSize))
+        }
+    }
 }

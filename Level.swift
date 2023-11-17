@@ -12,13 +12,11 @@ class Level {
     var answerType: AnswerType
     var body: UIImage
     var question: String
-    var options: [MCOption]?
+    var options: [Option]
     
-    init(answerType: AnswerType, body: UIImage, question: String, options: [MCOption]? = nil) {
-        if options == nil && answerType == .multipleChoice {
-            fatalError("Multiple Choice Answer must have Level options")
-        } else if options != nil && !options!.contains(where: { $0.correct }) {
-            fatalError("Multiple Choice Answer must have at least one correct option")
+    init(answerType: AnswerType, body: UIImage, question: String, options: [Option]) {
+        if !options.contains(where: { $0.correct }) {
+            fatalError("options must have at least one correct option")
         }
         
         self.answerType = answerType
@@ -32,9 +30,21 @@ class Level {
 enum AnswerType {
     case multipleChoice
     case shortAnswer
+    case selection
+    
+    var command: String {
+        switch self {
+        case .multipleChoice:
+            return "Select ONLY ONE option:"
+        case .shortAnswer:
+            return "Write your response:"
+        case .selection:
+            return "Pick ONE OR MORE options:"
+        }
+    }
 }
 
-class MCOption {
+class Option {
     var text: String?
     var image: UIImage?
     var correct: Bool
