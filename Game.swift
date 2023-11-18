@@ -10,7 +10,7 @@ import UIKit
 
 var levels: [Level] = [
     //        Level(answerType: .shortAnswer, body: UIImage(), question: "Solve this problem"),
-    Level(answerType: .multipleChoice, body: UIImage.add, question: "Solve this second problem", options: [Option(text: "test 1", image: UIImage()), Option(text: "test 2", image: UIImage.checkmark, correct: true), Option(text: "test 3", image: UIImage()), Option(text: "test 4", image: UIImage(), correct: true)]),
+    Level(answerType: .multipleChoice, body: UIImage.add, question: "Solve this second problem", options: [Option(text: "test 1", image: UIImage()), Option(text: "test 2", image: UIImage()), Option(text: "test 3", image: UIImage()), Option(text: "test 4", image: UIImage(), correct: true)]),
     
 ]
 
@@ -31,73 +31,73 @@ class Game: UIViewController {
     }
     
     func persistantInitialize() {
-        let scrollView = UIScrollView()
-        scrollView.backgroundColor = .brown
+        let scrollView = LevelSkeletonView(source: self)
         
-        let mainStack = UIStackView()
-        mainStack.spacing = 20
-        mainStack.axis = .vertical
-        
-        let levelLabel = UILabel()
-        levelLabel.tag = 1
-        levelLabel.font = levelLabel.font.withSize(50)
-        levelLabel.textAlignment = .center
-        
-        mainStack.addArrangedSubview(levelLabel)
-        
-        let bodyStack = UIStackView()
-        bodyStack.tag = 2
-        bodyStack.spacing = 20
-        bodyStack.axis = .vertical
-        
-        mainStack.addArrangedSubview(bodyStack)
-        
-        let bufferView = UIView()
-        
-        mainStack.addArrangedSubview(bufferView)
-        
-        let answerStack = UIStackView()
-        answerStack.backgroundColor = .blue
-        answerStack.tag = 3
-        answerStack.spacing = 10
-        answerStack.axis = .vertical
-        
-        let submitButton = UIButton()
-        submitButton.setTitle("Submit", for: .normal)
-        submitButton.setTitleColor(UIColor.link, for: .normal)
-        submitButton.layer.cornerRadius = 20
-        submitButton.layer.borderWidth = 2
-        submitButton.layer.borderColor = submitButton.titleLabel?.textColor.cgColor
-        submitButton.addAction(UIAction(handler: { _ in
-            self.submitPressed()
-        }), for: .touchUpInside)
-        
-        answerStack.addArrangedSubview(submitButton)
-        
-        mainStack.addArrangedSubview(answerStack)
-        
-        mainStack.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(mainStack)
+//        let scrollView = UIScrollView()
+//        scrollView.layer.masksToBounds = false
+//        
+//        let mainStack = UIStackView()
+//        mainStack.spacing = 10
+//        mainStack.axis = .vertical
+//        
+//        let levelLabel = UILabel()
+//        levelLabel.tag = 1
+//        levelLabel.font = levelLabel.font.withSize(50)
+//        levelLabel.textAlignment = .center
+//        
+//        mainStack.addArrangedSubview(levelLabel)
+//        
+//        let bodyStack = UIStackView()
+//        bodyStack.tag = 2
+//        bodyStack.spacing = 10
+//        bodyStack.axis = .vertical
+//        
+//        mainStack.addArrangedSubview(bodyStack)
+//        
+//        let bufferView = UIView()
+//        
+//        mainStack.addArrangedSubview(bufferView)
+//        
+//        let answerStack = UIStackView()
+//        answerStack.tag = 3
+//        answerStack.spacing = 10
+//        answerStack.axis = .vertical
+//        
+//        let submitButton = UIButton()
+//        submitButton.setTitle("Submit", for: .normal)
+//        submitButton.setTitleColor(UIColor.link, for: .normal)
+//        submitButton.layer.cornerRadius = 20
+//        submitButton.layer.borderWidth = 2
+//        submitButton.layer.borderColor = submitButton.titleLabel?.textColor.cgColor
+//        submitButton.addAction(UIAction(handler: { _ in
+//            self.submitPressed()
+//        }), for: .touchUpInside)
+//        
+//        answerStack.addArrangedSubview(submitButton)
+//        
+//        mainStack.addArrangedSubview(answerStack)
+//        
+//        mainStack.translatesAutoresizingMaskIntoConstraints = false
+//        scrollView.addSubview(mainStack)
         
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            scrollView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            scrollView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
         ])
         
-        NSLayoutConstraint.activate([
-            mainStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            mainStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            mainStack.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            mainStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            mainStack.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            mainStack.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor),
-            submitButton.heightAnchor.constraint(equalToConstant: 40)
-        ])
+//        NSLayoutConstraint.activate([
+//            mainStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),
+//            mainStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
+//            mainStack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
+//            mainStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -20),
+//            mainStack.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+//            submitButton.heightAnchor.constraint(equalToConstant: 40)
+//        ])
         
         self.view.layoutIfNeeded()
     }
@@ -200,6 +200,7 @@ class Game: UIViewController {
                 letterLabel.textColor = UIColor.link
                 letterLabel.layer.borderColor = letterLabel.textColor.cgColor
                 letterLabel.tag = 4
+                letterLabel.widthAnchor.constraint(equalToConstant: 20).isActive = true
                 
                 buttonStack.addArrangedSubview(letterLabel)
                 
@@ -260,7 +261,7 @@ class Game: UIViewController {
                     buttonLabel.text = option.text
                 }
                 if let buttonImage = optionView.findView(withTag: 6) as? UIImageView {
-                    buttonImage.image = option.image?.aspectFittedToWidth(optionView.bounds.width - 15)
+                    buttonImage.image = option.image?.aspectFittedToWidth(optionView.bounds.width - 35)
                 }
                 optionView.tag = 10 + i
             }
@@ -300,12 +301,19 @@ class Game: UIViewController {
                 }
             }
             //correct solution
-            print("yay")
+            correctSolutionChosen()
             return
         }
         print("NO!")
         
         // incorrect solution
+    }
+    
+    func correctSolutionChosen() {
+        let correctPopUp = CorrectPopUp()
+        view.addBlurEffect(style: .light)
+        view.addSubview(correctPopUp)
+        
     }
     
     
@@ -444,7 +452,33 @@ extension UIView {
         }
         return false
     }
+   
+    private var blurEffectTag: Int { return 999 } // Unique tag to identify the blur effect view
     
+    func addBlurEffect(style: UIBlurEffect.Style) {
+        // Check if the blur effect view is already added
+        if let _ = self.viewWithTag(blurEffectTag) {
+            return // Blur effect view already exists, no need to add it again
+        }
+        
+        // Create a blur effect
+        let blurEffect = UIBlurEffect(style: style)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        
+        // Configure the blur effect view
+        blurEffectView.frame = self.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.tag = blurEffectTag
+        
+        // Add the blur effect view to the background
+        self.addSubview(blurEffectView)
+    }
+    
+    func removeBlurEffect() {
+        if let blurView = self.viewWithTag(blurEffectTag) {
+            blurView.removeFromSuperview()
+        }
+    }
 }
 
 

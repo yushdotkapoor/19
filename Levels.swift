@@ -48,13 +48,16 @@ class Levels: UIViewController {
         let prev = UserDefaults.standard.bool(forKey: "Level \(button.tag - 1)")
         let curr = UserDefaults.standard.bool(forKey: "Level \(button.tag)")
         let next = UserDefaults.standard.bool(forKey: "Level \(button.tag + 1)")
-        button.isHidden = false
+//        button.isHidden = false
+        button.isEnabled = true
         if curr {
             button.setTitleColor(UIColor.green, for: .normal)
         } else if prev && !next {
             button.setTitleColor(UIColor.link, for: .normal)
         } else {
-            button.isHidden = true
+//            button.isHidden = true
+            button.isEnabled = false
+            button.setTitleColor(UIColor.secondaryLabel, for: .normal)
         }
     }
     
