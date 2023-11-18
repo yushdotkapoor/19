@@ -114,4 +114,44 @@ extension UIView {
             }
         }
     }
+    
+    
+    func fadeIn(duration: Double = 1.0) {
+        UIView.animate(withDuration: duration) {
+            self.alpha = 1.0
+        }
+    }
+    
+    func fadeOut(duration: Double = 1.0) {
+        UIView.animate(withDuration: duration) {
+            self.alpha = 0.0
+        }
+    }
+    
+    func startPulse() {
+        if !isUserInteractionEnabled {
+            UIView.animate(withDuration: 0.5, animations: {
+                self.transform = CGAffineTransform(scaleX: 1.15, y: 1.15)
+            }, completion: {_ in
+                UIView.animate(withDuration: 0.85, delay: 0.05, animations: {
+                    self.transform = CGAffineTransform(scaleX: 1/1.15, y: 1/1.15)
+                }, completion: {_ in
+                    self.startPulse()
+                })
+            })
+        }
+    }
+    
+    func stopPulse() {
+        isUserInteractionEnabled = true
+    }
+    
+    func shake() {
+        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
+        animation.duration = 0.75
+        animation.values = [-20.0, 20.0, -15.0, 15.0, -10.0, 10.0, -5.0, 5.0, 0.0]
+        layer.add(animation, forKey: "shake")
+    }
+    
 }

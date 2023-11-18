@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 import SwiftMath
 
-var levels: [Level] = [
-    Level(answerType: .shortAnswer, body: UIImage(), question: [Question.text(string: "what is the noble?")], options: [Option(text: "noble", image: UIImage(), correct: true)]),
-    Level(answerType: .multipleChoice, body: UIImage.add, question: [Question.text(string: "what is the following:"), Question.latex(string: "\\neg(P\\land Q) \\iff (\\neg P)\\lor(\\neg Q)"), Question.text(string: "like what????")], options: [Option(text: "test 1", latex: "x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}"), Option(text: "test 2"), Option(text: "test 3"), Option(text: "test 4", correct: true)]),
-]
+//var levels: [Level] = [
+//    Level(answerType: .shortAnswer, body: UIImage(), question: [Question.text(string: "what is the noble?")], options: [Option(text: "noble", image: UIImage(), correct: true)]),
+//    Level(answerType: .multipleChoice, body: UIImage.add, question: [Question.text(string: "what is the following:"), Question.latex(string: "\\neg(P\\land Q) \\iff (\\neg P)\\lor(\\neg Q)"), Question.text(string: "like what????")], options: [Option(text: "test 1", latex: "x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}"), Option(text: "test 2"), Option(text: "test 3"), Option(text: "test 4", correct: true)]),
+//]
 
 /*
  Tags:
@@ -259,24 +259,6 @@ extension Game: UITextFieldDelegate {
 }
 
 
-func impact(style: UIImpactFeedbackGenerator.FeedbackStyle) {
-    let generator = UIImpactFeedbackGenerator(style: style)
-    generator.impactOccurred()
-}
-
-func impact(style: UINotificationFeedbackGenerator.FeedbackType) {
-    let generator = UINotificationFeedbackGenerator()
-    generator.notificationOccurred(style)
-}
 
 
 
-extension UIView {
-    func shake() {
-        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
-        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
-        animation.duration = 0.75
-        animation.values = [-20.0, 20.0, -15.0, 15.0, -10.0, 10.0, -5.0, 5.0, 0.0]
-        layer.add(animation, forKey: "shake")
-    }
-}

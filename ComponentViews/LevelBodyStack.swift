@@ -21,7 +21,7 @@ class LevelBodyStack: UIStackView {
     
     func setupView(source: Game) {
         let lvl = levels[source.level-1]
-        for question in lvl.question {
+        for question in lvl.questions {
             switch question {
             case .latex(string: let string):
                 let questionLabel = MTMathUILabel()
@@ -40,10 +40,12 @@ class LevelBodyStack: UIStackView {
             }
         }
         
-        let questionImage = UIImageView()
-        questionImage.image = lvl.body.aspectFittedToWidth(bounds.width)
-        
-        addArrangedSubview(questionImage)
+        if let image = lvl.image {
+            let questionImage = UIImageView()
+            questionImage.image = image.aspectFittedToWidth(bounds.width)
+            
+            addArrangedSubview(questionImage)
+        }
     }
     
     

@@ -7,15 +7,23 @@
 
 import Foundation
 import UIKit
+import SwiftyJSON
+
+var targetDate: Date = Date.now
 
 class Levels: UIViewController {
     
     @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet weak var dateLabel: UILabel!
     
     let numLevels = levels.count
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.isNavigationBarHidden = true
+        
+        dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
         
         for i in 1...numLevels {
             let button = UIButton()
