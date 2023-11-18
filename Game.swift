@@ -7,11 +7,11 @@
 
 import Foundation
 import UIKit
+import SwiftMath
 
 var levels: [Level] = [
-    Level(answerType: .shortAnswer, body: UIImage(), question: "Solve this problem", options: [Option(text: "noble", image: UIImage(), correct: true)]),
-    Level(answerType: .multipleChoice, body: UIImage.add, question: "Solve this second problem", options: [Option(text: "test 1", image: UIImage()), Option(text: "test 2", image: UIImage()), Option(text: "test 3", image: UIImage()), Option(text: "test 4", image: UIImage(), correct: true)]),
-    
+    Level(answerType: .shortAnswer, body: UIImage(), question: [Question.text(string: "what is the noble?")], options: [Option(text: "noble", image: UIImage(), correct: true)]),
+    Level(answerType: .multipleChoice, body: UIImage.add, question: [Question.text(string: "what is the following:"), Question.latex(string: "\\neg(P\\land Q) \\iff (\\neg P)\\lor(\\neg Q)"), Question.text(string: "like what????")], options: [Option(text: "test 1", latex: "x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}"), Option(text: "test 2"), Option(text: "test 3"), Option(text: "test 4", correct: true)]),
 ]
 
 /*
@@ -23,6 +23,7 @@ var levels: [Level] = [
     5 - buttonLabel (UILabel for each MC option that displays the text answer choice)
     6 - buttonImage (UIImage for each MC option that displays the image answer choice)
     7 - textBox (UITextField for SA option that allows user input for the answer)
+    8 - latexLabel (MTMathUILabel for each MC option that displays latex text)
     10+N - optionView (Each answer choice/field has their own unique tag)
  */
 

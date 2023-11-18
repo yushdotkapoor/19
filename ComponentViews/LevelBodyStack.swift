@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SwiftMath
 
 class LevelBodyStack: UIStackView {
     
@@ -20,12 +21,24 @@ class LevelBodyStack: UIStackView {
     
     func setupView(source: Game) {
         let lvl = levels[source.level-1]
-        let questionLabel = UILabel()
-        questionLabel.text = lvl.question
-        questionLabel.numberOfLines = 0
-        questionLabel.font = questionLabel.font.withSize(20)
-        
-        addArrangedSubview(questionLabel)
+        for question in lvl.question {
+            switch question {
+            case .latex(string: let string):
+                let questionLabel = MTMathUILabel()
+                questionLabel.latex = string
+                questionLabel.fontSize = 20.0
+                questionLabel.fitWithin(width: bounds.width)
+                
+                addArrangedSubview(questionLabel)
+            case .text(string: let string):
+                let questionLabel = UILabel()
+                questionLabel.text = string
+                questionLabel.numberOfLines = 0
+                questionLabel.font = questionLabel.font.withSize(20)
+                
+                addArrangedSubview(questionLabel)
+            }
+        }
         
         let questionImage = UIImageView()
         questionImage.image = lvl.body.aspectFittedToWidth(bounds.width)

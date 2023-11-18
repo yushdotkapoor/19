@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SwiftMath
 
 class LevelAnswerStack: UIStackView {
     
@@ -65,13 +66,13 @@ class LevelAnswerStack: UIStackView {
                 let buttonStack = UIStackView()
                 buttonStack.distribution = .fillProportionally
                 buttonStack.axis = .horizontal
-                buttonStack.spacing = 10
+                buttonStack.spacing = 5
                 
                 let letterLabel = UILabel()
                 letterLabel.textColor = UIColor.link
                 letterLabel.layer.borderColor = letterLabel.textColor.cgColor
                 letterLabel.tag = 4
-                letterLabel.widthAnchor.constraint(equalToConstant: 20).isActive = true
+                letterLabel.widthAnchor.constraint(equalToConstant: 15).isActive = true
                 
                 buttonStack.addArrangedSubview(letterLabel)
                 
@@ -85,6 +86,13 @@ class LevelAnswerStack: UIStackView {
                 buttonLabel.tag = 5
                 
                 choiceStack.addArrangedSubview(buttonLabel)
+                
+                let latexLabel = MTMathUILabel()
+                latexLabel.textColor = UIColor.link
+                latexLabel.autoresizesSubviews = true
+                latexLabel.tag = 8
+                
+                choiceStack.addArrangedSubview(latexLabel)
                 
                 let buttonImage = UIImageView()
                 buttonImage.tag = 6
@@ -124,6 +132,8 @@ class LevelAnswerStack: UIStackView {
             
             
             for (i, optionView) in source.optionViews.enumerated() {
+                let stackWidth = optionView.bounds.width - 30
+                
                 let option = lvl.options[i]
                 if let letterLabel = optionView.findView(withTag: 4) as? UILabel {
                     letterLabel.text = String(Character(UnicodeScalar(i + 65)!))
@@ -131,8 +141,21 @@ class LevelAnswerStack: UIStackView {
                 if let buttonLabel = optionView.findView(withTag: 5) as? UILabel {
                     buttonLabel.text = option.text
                 }
+                if let latexLabel = optionView.findView(withTag: 8) as? MTMathUILabel {
+                    if let latex = option.latex {
+                        latexLabel.labelMode = .text
+                        latexLabel.latex = latex
+                        latexLabel.fitWithin(width: stackWidth)
+                    } else {
+                        latexLabel.isHidden = true
+                    }
+                }
                 if let buttonImage = optionView.findView(withTag: 6) as? UIImageView {
-                    buttonImage.image = option.image?.aspectFittedToWidth(optionView.bounds.width - 35)
+                    if let img = option.image {
+                        buttonImage.image = img.aspectFittedToWidth(stackWidth)
+                    } else {
+                        buttonImage.isHidden = true
+                    }
                 }
                 optionView.tag = 10 + i
             }
@@ -140,4 +163,13 @@ class LevelAnswerStack: UIStackView {
     }
     
     
+}
+
+
+extension MTMathUILabel {
+    func fitWithin(width: CGFloat) {
+        while intrinsicContentSize.width > width {
+            fontSize -= 0.1
+        }
+    }
 }
