@@ -60,6 +60,8 @@ class LevelSkeletonView: UIScrollView {
         answerStack.spacing = 10
         answerStack.axis = .vertical
         
+        mainStack.addArrangedSubview(answerStack)
+        
         let submitButton = UIButton()
         submitButton.setTitle("Submit", for: .normal)
         submitButton.setTitleColor(UIColor.link, for: .normal)
@@ -70,9 +72,7 @@ class LevelSkeletonView: UIScrollView {
             source.submitPressed()
         }), for: .touchUpInside)
         
-        answerStack.addArrangedSubview(submitButton)
-        
-        mainStack.addArrangedSubview(answerStack)
+        mainStack.addArrangedSubview(submitButton)
         
         mainStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(mainStack)

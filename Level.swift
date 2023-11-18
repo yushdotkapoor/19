@@ -18,8 +18,8 @@ class Level {
         let correctOptions = options.filter({ $0.correct })
         if correctOptions.isEmpty {
             fatalError("options must have at least one correct option")
-        } else if correctOptions.count > 1 && answerType == .multipleChoice {
-            fatalError("options must have only one correct option for multiple choice")
+        } else if correctOptions.count > 1 && (answerType == .multipleChoice || answerType == .shortAnswer) {
+            fatalError("options must have only one correct option for multiple choice or short answer")
         }
         
         self.answerType = answerType
@@ -53,7 +53,7 @@ class Option {
     var correct: Bool
     var id: String
     
-    init(text: String?, image: UIImage?, correct: Bool=false) {
+    init(text: String?, image: UIImage?=UIImage(), correct: Bool=false) {
         self.text = text
         self.image = image
         self.correct = correct

@@ -61,6 +61,10 @@ class CorrectPopUp: UIView {
         nextButton.layer.borderWidth = 2
         nextButton.addAction(UIAction(handler: { _ in
             source.transitionLevel()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                source.view.removeBlurEffect()
+                self.removeFromSuperview()
+            }
         }), for: .touchUpInside)
         
         popUpStack.addArrangedSubview(nextButton)

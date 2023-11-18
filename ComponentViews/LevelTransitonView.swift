@@ -68,6 +68,7 @@ class LevelTransitonView: UIView {
     func beginAnimation() {
         guard let source = source else { return }
         let timeConstant:Double = 0.5
+        let timeConstant2:Double = 0.7
         
         UIView.animate(withDuration: timeConstant) {
             self.alpha = 1
@@ -75,18 +76,23 @@ class LevelTransitonView: UIView {
             UIView.animate(withDuration: timeConstant) {
                 self.firstLevelLabel.alpha = 1
             } completion: { _ in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + timeConstant2) {
                     UIView.animate(withDuration: timeConstant) {
                         self.secondLevelLabel.alpha = 1
                     } completion: { _ in
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + timeConstant2) {
                             UIView.animate(withDuration: timeConstant) {
                                 self.firstLevelLabel.alpha = 0
                             } completion: { _ in
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + timeConstant2) {
                                     source.clearView()
                                     source.level += 1
                                     source.initializeLevel()
+                                    UIView.animate(withDuration: timeConstant) {
+                                        self.alpha = 0
+                                    } completion: { _ in
+                                        self.removeFromSuperview()
+                                    }
                                 }
                             }
                         }

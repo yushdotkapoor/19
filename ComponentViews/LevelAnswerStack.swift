@@ -27,6 +27,8 @@ class LevelAnswerStack: UIStackView {
         
         insertArrangedSubview(commandLabel, at: 0)
         
+        source.optionViews = []
+        
         switch lvl.answerType {
         case .shortAnswer:
             let textBox = UITextField()
@@ -43,12 +45,14 @@ class LevelAnswerStack: UIStackView {
             
             textBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
             
+            source.optionViews.append(textBox)
+            
             insertArrangedSubview(textBox, at: 1)
         case .multipleChoice, .selection:
             var n = 0
             var hStack: UIStackView!
             var rows = 0
-            source.optionViews = []
+            
             for _ in lvl.options {
                 let outerButtonView = UIView()
                 outerButtonView.layer.cornerRadius = 10

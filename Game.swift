@@ -14,6 +14,18 @@ var levels: [Level] = [
     
 ]
 
+/*
+ Tags:
+    1 - levelLabel (top UILabel that displays level)
+    2 - bodyStack (UIStackView that contains the question)
+    3 - answerStack (UIStackView that contains the answer options)
+    4 - letterLabel (UILabel for each MC option [A, B, C, D...])
+    5 - buttonLabel (UILabel for each MC option that displays the text answer choice)
+    6 - buttonImage (UIImage for each MC option that displays the image answer choice)
+    7 - textBox (UITextField for SA option that allows user input for the answer)
+    10+N - optionView (Each answer choice/field has their own unique tag)
+ */
+
 class Game: UIViewController {
     
     var level: Int!
@@ -32,7 +44,7 @@ class Game: UIViewController {
     
     func persistantInitialize() {
         let scrollView = LevelSkeletonView(source: self)
-       
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(scrollView)
         
@@ -93,10 +105,13 @@ class Game: UIViewController {
         var correctAnswers: [Option] = []
         var answers: [Option] = []
         
+        
         switch lvl.answerType {
         case .shortAnswer:
             correctAnswers = lvl.options
-            
+            if let textField = optionViews.last as? UITextField {
+                answers = [Option(text: textField.text)]
+            }
         case .multipleChoice, .selection:
             for optionView in optionViews {
                 let option = lvl.options[optionView.tag - 10]
@@ -111,19 +126,26 @@ class Game: UIViewController {
         
         if answers.count == correctAnswers.count {
             for i in correctAnswers {
-                if !answers.contains(where: { $0.id == i.id }) {
+                let mc = answers.contains(where: { $0.id == i.id })
+                let sa = answers.contains(where: { $0.text == i.text })
+                
+                if ([.multipleChoice, .selection].contains(lvl.answerType) && !mc) || (lvl.answerType == .shortAnswer && !sa) {
                     // Incorrect solution
                     impact(style: .error)
+                    print("NO")
                     shakeForError()
                     return
                 }
             }
             //correct solution
+            print("yay")
+            impact(style: .success)
             correctSolutionChosen()
             return
         }
         
         // incorrect solution
+        print("NO")
         impact(style: .error)
         shakeForError()
     }
@@ -131,13 +153,13 @@ class Game: UIViewController {
     func shakeForError() {
         let answerStack = getAnswerStackView()
         var views:[UIView] = []
-        if !optionViews.isEmpty {
-            for i in 0...optionViews.count - 1 {
-                if let aView = answerStack.findView(withTag: i + 10) {
-                    views.append(aView)
-                }
+        
+        for i in 0...optionViews.count - 1 {
+            if let aView = answerStack.findView(withTag: i + 10) {
+                views.append(aView)
             }
         }
+        
         
         if let aView = answerStack.findView(withTag: 7) {
             views.append(aView)
@@ -186,9 +208,6 @@ class Game: UIViewController {
         }
         
         levelTransitionView.beginAnimation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.view.removeBlurEffect()
-        }
     }
     
     

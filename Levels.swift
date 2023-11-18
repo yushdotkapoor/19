@@ -27,7 +27,7 @@ class Levels: UIViewController {
             
             button.layer.cornerRadius = 20
             button.layer.borderWidth = 2
-            button.layer.borderColor = button.titleLabel?.textColor.cgColor
+            
             
             button.addAction(UIAction(handler: { _ in
                 self.buttonTapped(tag: i)
@@ -57,6 +57,7 @@ class Levels: UIViewController {
             button.isEnabled = false
             button.setTitleColor(UIColor.tertiaryLabel, for: .normal)
         }
+        button.layer.borderColor = button.titleLabel?.textColor.cgColor
     }
     
     func buttonTapped(tag: Int) {
