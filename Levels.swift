@@ -48,21 +48,18 @@ class Levels: UIViewController {
         let prev = UserDefaults.standard.bool(forKey: "Level \(button.tag - 1)")
         let curr = UserDefaults.standard.bool(forKey: "Level \(button.tag)")
         let next = UserDefaults.standard.bool(forKey: "Level \(button.tag + 1)")
-//        button.isHidden = false
         button.isEnabled = true
         if curr {
-            button.setTitleColor(UIColor.green, for: .normal)
+            button.setTitleColor(UIColor.systemGreen, for: .normal)
         } else if prev && !next {
             button.setTitleColor(UIColor.link, for: .normal)
         } else {
-//            button.isHidden = true
             button.isEnabled = false
-            button.setTitleColor(UIColor.secondaryLabel, for: .normal)
+            button.setTitleColor(UIColor.tertiaryLabel, for: .normal)
         }
     }
     
     func buttonTapped(tag: Int) {
-        print(tag)
         let vc = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(identifier: "Game") as! Game
         vc.level = tag
         navigationController?.pushViewController(vc, animated: true)

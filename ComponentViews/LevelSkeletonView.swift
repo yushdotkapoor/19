@@ -27,6 +27,10 @@ class LevelSkeletonView: UIScrollView {
     }
     
     func setupView() {
+        guard let source = self.source else {
+            return
+        }
+        
         layer.masksToBounds = false
         
         let mainStack = UIStackView()
@@ -40,7 +44,7 @@ class LevelSkeletonView: UIScrollView {
         
         mainStack.addArrangedSubview(levelLabel)
         
-        let bodyStack = UIStackView()
+        let bodyStack = LevelBodyStack()
         bodyStack.tag = 2
         bodyStack.spacing = 10
         bodyStack.axis = .vertical
@@ -51,7 +55,7 @@ class LevelSkeletonView: UIScrollView {
         
         mainStack.addArrangedSubview(bufferView)
         
-        let answerStack = UIStackView()
+        let answerStack = LevelAnswerStack()
         answerStack.tag = 3
         answerStack.spacing = 10
         answerStack.axis = .vertical
@@ -63,7 +67,7 @@ class LevelSkeletonView: UIScrollView {
         submitButton.layer.borderWidth = 2
         submitButton.layer.borderColor = submitButton.titleLabel?.textColor.cgColor
         submitButton.addAction(UIAction(handler: { _ in
-            self.source!.submitPressed()
+            source.submitPressed()
         }), for: .touchUpInside)
         
         answerStack.addArrangedSubview(submitButton)

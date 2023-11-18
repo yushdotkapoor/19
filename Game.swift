@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 var levels: [Level] = [
-    //        Level(answerType: .shortAnswer, body: UIImage(), question: "Solve this problem"),
+    Level(answerType: .shortAnswer, body: UIImage(), question: "Solve this problem", options: [Option(text: "noble", image: UIImage(), correct: true)]),
     Level(answerType: .multipleChoice, body: UIImage.add, question: "Solve this second problem", options: [Option(text: "test 1", image: UIImage()), Option(text: "test 2", image: UIImage()), Option(text: "test 3", image: UIImage()), Option(text: "test 4", image: UIImage(), correct: true)]),
     
 ]
@@ -32,54 +32,7 @@ class Game: UIViewController {
     
     func persistantInitialize() {
         let scrollView = LevelSkeletonView(source: self)
-        
-//        let scrollView = UIScrollView()
-//        scrollView.layer.masksToBounds = false
-//        
-//        let mainStack = UIStackView()
-//        mainStack.spacing = 10
-//        mainStack.axis = .vertical
-//        
-//        let levelLabel = UILabel()
-//        levelLabel.tag = 1
-//        levelLabel.font = levelLabel.font.withSize(50)
-//        levelLabel.textAlignment = .center
-//        
-//        mainStack.addArrangedSubview(levelLabel)
-//        
-//        let bodyStack = UIStackView()
-//        bodyStack.tag = 2
-//        bodyStack.spacing = 10
-//        bodyStack.axis = .vertical
-//        
-//        mainStack.addArrangedSubview(bodyStack)
-//        
-//        let bufferView = UIView()
-//        
-//        mainStack.addArrangedSubview(bufferView)
-//        
-//        let answerStack = UIStackView()
-//        answerStack.tag = 3
-//        answerStack.spacing = 10
-//        answerStack.axis = .vertical
-//        
-//        let submitButton = UIButton()
-//        submitButton.setTitle("Submit", for: .normal)
-//        submitButton.setTitleColor(UIColor.link, for: .normal)
-//        submitButton.layer.cornerRadius = 20
-//        submitButton.layer.borderWidth = 2
-//        submitButton.layer.borderColor = submitButton.titleLabel?.textColor.cgColor
-//        submitButton.addAction(UIAction(handler: { _ in
-//            self.submitPressed()
-//        }), for: .touchUpInside)
-//        
-//        answerStack.addArrangedSubview(submitButton)
-//        
-//        mainStack.addArrangedSubview(answerStack)
-//        
-//        mainStack.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(mainStack)
-        
+       
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(scrollView)
         
@@ -90,28 +43,19 @@ class Game: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
         ])
         
-//        NSLayoutConstraint.activate([
-//            mainStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),
-//            mainStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
-//            mainStack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
-//            mainStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -20),
-//            mainStack.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-//            submitButton.heightAnchor.constraint(equalToConstant: 40)
-//        ])
-        
         self.view.layoutIfNeeded()
     }
     
-    func getBodyStackView() -> UIStackView {
-        guard let stackView = self.view.findView(withTag: 2) as? UIStackView else {
-            return UIStackView()
+    func getBodyStackView() -> LevelBodyStack {
+        guard let stackView = self.view.findView(withTag: 2) as? LevelBodyStack else {
+            return LevelBodyStack()
         }
         return stackView
     }
     
-    func getAnswerStackView() -> UIStackView {
-        guard let stackView = self.view.findView(withTag: 3) as? UIStackView else {
-            return UIStackView()
+    func getAnswerStackView() -> LevelAnswerStack {
+        guard let stackView = self.view.findView(withTag: 3) as? LevelAnswerStack else {
+            return LevelAnswerStack()
         }
         return stackView
     }
@@ -135,137 +79,12 @@ class Game: UIViewController {
     
     func initializeBody() {
         let bodyStack = getBodyStackView()
-        
-        let lvl = levels[level-1]
-        let questionLabel = UILabel()
-        questionLabel.text = lvl.question
-        questionLabel.numberOfLines = 0
-        questionLabel.font = questionLabel.font.withSize(20)
-        
-        bodyStack.addArrangedSubview(questionLabel)
-        
-        let questionImage = UIImageView()
-        questionImage.image = lvl.body.aspectFittedToWidth(bodyStack.bounds.width)
-        
-        bodyStack.addArrangedSubview(questionImage)
+        bodyStack.setupView(source: self)
     }
     
     func initializeAnswers() {
         let answerStack = getAnswerStackView()
-        
-        let lvl = levels[level-1]
-        
-        let commandLabel = UILabel()
-        commandLabel.numberOfLines = 0
-        commandLabel.text = lvl.answerType.command
-        
-        answerStack.insertArrangedSubview(commandLabel, at: 0)
-        
-        switch lvl.answerType {
-        case .shortAnswer:
-            let textBox = UITextField()
-            textBox.placeholder = "Answer"
-            textBox.layer.borderWidth = 2
-            textBox.layer.cornerRadius = 20
-            textBox.returnKeyType = .done
-            textBox.autocorrectionType = .no
-            textBox.smartInsertDeleteType = .no
-            textBox.delegate = self
-            textBox.setLeftPaddingPoints(10)
-            textBox.setRightPaddingPoints(10)
-            
-            textBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
-            
-            answerStack.insertArrangedSubview(textBox, at: 1)
-        case .multipleChoice, .selection:
-            var n = 0
-            var hStack: UIStackView!
-            var rows = 0
-            optionViews = []
-            for _ in lvl.options {
-                let outerButtonView = UIView()
-                outerButtonView.layer.cornerRadius = 10
-                outerButtonView.layer.borderWidth = 2
-                outerButtonView.layer.borderColor = UIColor.link.cgColor
-                let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleMCTap(_:)))
-                outerButtonView.addGestureRecognizer(tap)
-                outerButtonView.isUserInteractionEnabled = true
-                
-                let buttonStack = UIStackView()
-                buttonStack.distribution = .fillProportionally
-                buttonStack.axis = .horizontal
-                buttonStack.spacing = 10
-                
-                let letterLabel = UILabel()
-                letterLabel.textColor = UIColor.link
-                letterLabel.layer.borderColor = letterLabel.textColor.cgColor
-                letterLabel.tag = 4
-                letterLabel.widthAnchor.constraint(equalToConstant: 20).isActive = true
-                
-                buttonStack.addArrangedSubview(letterLabel)
-                
-                let choiceStack = UIStackView()
-                choiceStack.axis = .vertical
-                choiceStack.spacing = 5
-                
-                let buttonLabel = UILabel()
-                buttonLabel.textColor = UIColor.link
-                buttonLabel.numberOfLines = 0
-                buttonLabel.tag = 5
-                
-                choiceStack.addArrangedSubview(buttonLabel)
-                
-                let buttonImage = UIImageView()
-                buttonImage.tag = 6
-                
-                choiceStack.addArrangedSubview(buttonImage)
-                
-                buttonStack.addArrangedSubview(choiceStack)
-                
-                optionViews.append(outerButtonView)
-                
-                buttonStack.translatesAutoresizingMaskIntoConstraints = false
-                outerButtonView.addSubview(buttonStack)
-                
-                NSLayoutConstraint.activate([
-                    buttonStack.leadingAnchor.constraint(equalTo: outerButtonView.leadingAnchor, constant: 5),
-                    buttonStack.trailingAnchor.constraint(equalTo: outerButtonView.trailingAnchor, constant: -5),
-                    buttonStack.topAnchor.constraint(equalTo: outerButtonView.topAnchor, constant: 5),
-                    buttonStack.bottomAnchor.constraint(equalTo: outerButtonView.bottomAnchor, constant: -5),
-                ])
-                
-                if n == 0 {
-                    hStack = UIStackView()
-                    hStack.axis = .horizontal
-                    hStack.distribution = .fillEqually
-                    hStack.spacing = 10
-                    
-                    answerStack.insertArrangedSubview(hStack, at: rows + 1)
-                    n += 1
-                } else {
-                    n = 0
-                    rows += 1
-                }
-                
-                hStack.addArrangedSubview(outerButtonView)
-                hStack.layoutSubviews()
-            }
-            
-            
-            for (i, optionView) in optionViews.enumerated() {
-                let option = lvl.options[i]
-                if let letterLabel = optionView.findView(withTag: 4) as? UILabel {
-                    letterLabel.text = String(Character(UnicodeScalar(i + 65)!))
-                }
-                if let buttonLabel = optionView.findView(withTag: 5) as? UILabel {
-                    buttonLabel.text = option.text
-                }
-                if let buttonImage = optionView.findView(withTag: 6) as? UIImageView {
-                    buttonImage.image = option.image?.aspectFittedToWidth(optionView.bounds.width - 35)
-                }
-                optionView.tag = 10 + i
-            }
-        }
+        answerStack.setupView(source: self)
     }
     
     func submitPressed() {
@@ -277,8 +96,6 @@ class Game: UIViewController {
         switch lvl.answerType {
         case .shortAnswer:
             correctAnswers = lvl.options
-            
-            
             
         case .multipleChoice, .selection:
             for optionView in optionViews {
@@ -296,7 +113,8 @@ class Game: UIViewController {
             for i in correctAnswers {
                 if !answers.contains(where: { $0.id == i.id }) {
                     // Incorrect solution
-                    print("NO")
+                    impact(style: .error)
+                    shakeForError()
                     return
                 }
             }
@@ -304,16 +122,73 @@ class Game: UIViewController {
             correctSolutionChosen()
             return
         }
-        print("NO!")
         
         // incorrect solution
+        impact(style: .error)
+        shakeForError()
+    }
+    
+    func shakeForError() {
+        let answerStack = getAnswerStackView()
+        var views:[UIView] = []
+        if !optionViews.isEmpty {
+            for i in 0...optionViews.count - 1 {
+                if let aView = answerStack.findView(withTag: i + 10) {
+                    views.append(aView)
+                }
+            }
+        }
+        
+        if let aView = answerStack.findView(withTag: 7) {
+            views.append(aView)
+        }
+        
+        for v in views {
+            v.shake()
+        }
+        
     }
     
     func correctSolutionChosen() {
-        let correctPopUp = CorrectPopUp()
-        view.addBlurEffect(style: .light)
+        UserDefaults.standard.setValue(true, forKey: "Level " + (String(level)))
+        let correctPopUp = CorrectPopUp(source: self)
+        
         view.addSubview(correctPopUp)
         
+        NSLayoutConstraint.activate([
+            correctPopUp.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            correctPopUp.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+        
+        correctPopUp.beginAnimation()
+    }
+    
+    func transitionLevel() {
+        let levelTransitionView = LevelTransitonView(source: self)
+        
+        view.addSubview(levelTransitionView)
+        
+        NSLayoutConstraint.activate([
+            levelTransitionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            levelTransitionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            levelTransitionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            levelTransitionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ])
+        
+        if levels.count < level + 1 {
+            // completed set
+            UIView.animate(withDuration: 1) {
+                levelTransitionView.alpha = 1
+            } completion: { _ in
+                self.navigationController?.popViewController(animated: true)
+            }
+            return
+        }
+        
+        levelTransitionView.beginAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.view.removeBlurEffect()
+        }
     }
     
     
@@ -337,8 +212,6 @@ class Game: UIViewController {
             }
         }
     }
-    
-    
     
     @objc func keyboardWillChange(_ notification: Notification) {
         if let scrollView = view.getTopScrollView() {
@@ -366,122 +239,6 @@ extension Game: UITextFieldDelegate {
 }
 
 
-
-extension UITextField {
-    func setLeftPaddingPoints(_ amount:CGFloat){
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.leftView = paddingView
-        self.leftViewMode = .always
-    }
-    func setRightPaddingPoints(_ amount:CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.rightView = paddingView
-        self.rightViewMode = .always
-    }
-}
-
-
-extension UIView {
-    /**
-     Recursively gets the topmost UiScrollView in a view.
-     
-     - Returns: The topmost UIScrollView in the view.
-     */
-    func getTopScrollView() -> UIScrollView? {
-        if let scrollView = self as? UIScrollView {
-            return scrollView
-        }
-        
-        for subview in self.subviews {
-            if let scrollView = subview.getTopScrollView() {
-                return scrollView
-            }
-        }
-        
-        return nil
-    }
-    
-    func findView(withTag tag: Int) -> UIView? {
-        if self.tag == tag {
-            return self
-        }
-        
-        for subview in self.subviews {
-            if let view = subview.findView(withTag: tag) {
-                return view
-            }
-        }
-        
-        return nil
-    }
-    
-    func addHighlightLayer() {
-        let highlightLayer = CALayer()
-        highlightLayer.frame = bounds
-        
-        let cornerRadius = layer.cornerRadius // Get the corner radius of the view
-        highlightLayer.cornerRadius = cornerRadius
-        
-        highlightLayer.backgroundColor = UIColor.lightGray.cgColor
-        highlightLayer.opacity = 0.5
-        
-        layer.addSublayer(highlightLayer)
-        layer.mask = createMaskLayer()
-    }
-    
-    private func createMaskLayer() -> CAShapeLayer {
-        let maskLayer = CAShapeLayer()
-        maskLayer.frame = bounds
-        
-        let path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius)
-        maskLayer.path = path.cgPath
-        
-        return maskLayer
-    }
-    
-    func removeHighlightLayer() {
-        // Find the highlight layer based on a specific condition (e.g., color, type, etc.)
-        if let highlightLayer = layer.sublayers?.first(where: { $0.backgroundColor == UIColor.lightGray.cgColor }) {
-            highlightLayer.removeFromSuperlayer() // Remove the highlight layer from its superlayer
-        }
-    }
-    
-    func isHighlighted() -> Bool {
-        if let _ = layer.sublayers?.first(where: { $0.backgroundColor == UIColor.lightGray.cgColor }) {
-            return true
-        }
-        return false
-    }
-   
-    private var blurEffectTag: Int { return 999 } // Unique tag to identify the blur effect view
-    
-    func addBlurEffect(style: UIBlurEffect.Style) {
-        // Check if the blur effect view is already added
-        if let _ = self.viewWithTag(blurEffectTag) {
-            return // Blur effect view already exists, no need to add it again
-        }
-        
-        // Create a blur effect
-        let blurEffect = UIBlurEffect(style: style)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        
-        // Configure the blur effect view
-        blurEffectView.frame = self.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.tag = blurEffectTag
-        
-        // Add the blur effect view to the background
-        self.addSubview(blurEffectView)
-    }
-    
-    func removeBlurEffect() {
-        if let blurView = self.viewWithTag(blurEffectTag) {
-            blurView.removeFromSuperview()
-        }
-    }
-}
-
-
 func impact(style: UIImpactFeedbackGenerator.FeedbackStyle) {
     let generator = UIImpactFeedbackGenerator(style: style)
     generator.impactOccurred()
@@ -493,19 +250,13 @@ func impact(style: UINotificationFeedbackGenerator.FeedbackType) {
 }
 
 
-extension UIImage
-{
-    /// Given a required height, returns a (rasterised) copy
-    /// of the image, aspect-fitted to that height.
 
-    func aspectFittedToWidth(_ newWidth: CGFloat) -> UIImage {
-        let scale = newWidth / self.size.width
-        let newHeight = self.size.height * scale
-        let newSize = CGSize(width: newWidth, height: newHeight)
-        let renderer = UIGraphicsImageRenderer(size: newSize)
-
-        return renderer.image { _ in
-            self.draw(in: CGRect(origin: .zero, size: newSize))
-        }
+extension UIView {
+    func shake() {
+        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
+        animation.duration = 0.75
+        animation.values = [-20.0, 20.0, -15.0, 15.0, -10.0, 10.0, -5.0, 5.0, 0.0]
+        layer.add(animation, forKey: "shake")
     }
 }
