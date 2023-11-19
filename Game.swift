@@ -101,6 +101,8 @@ class Game: UIViewController {
     }
     
     func submitPressed() {
+        view.endEditing(true)
+        
         let lvl = levels[level-1]
         
         var correctAnswers: [Option] = []
@@ -170,11 +172,16 @@ class Game: UIViewController {
     
     func correctSolutionChosen() {
         levels[level - 1].completed = true
-        ref.child("Users").child(auth.currentUser!.uid).child("levelCompletion").child(targetDate.toString(format: "yyyyMMdd")).child(String(level - 1)).setValue(true)
+        let dtFormatted = targetDate.toString(format: "yyyyMMdd")
+        ref.child("Users").child(auth.currentUser!.uid).child("levelCompletion").child(dtFormatted).child(String(level - 1)).setValue(true)
         
         if levels.count < level + 1 {
             // completed set
-            ref.child("Users").child(auth.currentUser!.uid).child("setCompletion").child(targetDate.toString(format: "yyyyMMdd")).setValue(true)
+            ref.child("Users").child(auth.currentUser!.uid).child("setCompletion").child(dtFormatted).setValue(true)
+            if var setsCompleted = UserDefaults.standard.dictionary(forKey: "setsCompleted") as? [String: Bool] {
+                setsCompleted[dtFormatted] = true
+                UserDefaults.standard.setValue(setsCompleted, forKey: "setsCompleted")
+            }
         }
         
         let correctPopUp = CorrectPopUp(source: self)

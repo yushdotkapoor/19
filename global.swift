@@ -45,7 +45,8 @@ func downloadLevels(forDate dt: Date) {
 }
 
 func updateCompletion(forDate dt: Date) {
-    ref.child("Users").child(auth.currentUser!.uid).child("levelCompletion").child(dt.toString(format: "yyyyMMdd")).getData { error, snapshot in
+    guard let currentUser = auth.currentUser else { return }
+    ref.child("Users").child(currentUser.uid).child("levelCompletion").child(dt.toString(format: "yyyyMMdd")).getData { error, snapshot in
         if error != nil {
             print(error!)
         }
@@ -61,21 +62,19 @@ func updateCompletion(forDate dt: Date) {
         levels = levels
     }
     
-    ref.child("Users").child(auth.currentUser!.uid).child("setCompletion").getData { error, snapshot in
+    ref.child("Users").child(currentUser.uid).child("setCompletion").getData { error, snapshot in
         if error != nil {
             print(error!)
         }
-        
-        guard let snapshot = snapshot, let value = snapshot.value as? NSArray else { return }
+
+        guard let snapshot = snapshot, let value = snapshot.value as? NSDictionary else { return }
         let arr = JSON(value)
-        if var setsCompleted = UserDefaults.standard.dictionary(forKey: "setsCompleted") as? [String: Bool] {
-            for i in arr {
-                guard let completed = i.1.bool else { return }
-                setsCompleted[i.0] = completed
-            }
-            UserDefaults.standard.setValue(setsCompleted, forKey: "setsCompleted")
+        var setsCompleted: [String: Bool] = [:]
+        for i in arr {
+            guard let completed = i.1.bool else { return }
+            setsCompleted[i.0] = completed
         }
-       
+        UserDefaults.standard.setValue(setsCompleted, forKey: "setsCompleted")
     }
 }
 
@@ -108,25 +107,11 @@ func retrievePath(name: String) -> String? {
 }
 
 
-extension UIApplication {
-    /**
-     Recursively gets the top UIViewController.
-     
-     - Parameters:
-     - base: The base ViewController, defaults as the root ViewController.
-     
-     - Returns: The sum of `a` and `b`.
-     */
-    class func topViewController(base: UIViewController? = UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController) -> UIViewController? {
-        if let nav = base as? UINavigationController {
-            return topViewController(base: nav.visibleViewController)
-            
-        } else if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
-            return topViewController(base: selected)
-            
-        } else if let presented = base?.presentedViewController {
-            return topViewController(base: presented)
-        }
-        return base
+
+func setCompleted(forDate date: Date) -> Bool {
+    if let setsCompleted = UserDefaults.standard.dictionary(forKey: "setsCompleted") as? [String: Bool] {
+        let k = date.toString(format: "yyyyMMdd")
+        return setsCompleted.keys.contains(k) && setsCompleted[k]!
     }
+    return false
 }

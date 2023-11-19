@@ -24,7 +24,6 @@ class Levels: UIViewController {
         navigationController?.setViewControllers([self], animated: false)
         
         updateButtonStates()
-        layoutLevelStack()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -33,9 +32,11 @@ class Levels: UIViewController {
         for button in getButton() {
             enableButton(button: button)
         }
+        
+        dateLabel.textColor = setCompleted(forDate: targetDate) ? UIColor.systemGreen : .label
     }
     
-    func enableButton(button: UIButton) {
+    func enableButton(button: UIButton, bypass: Bool=false) {
         var prev = true
         let lvl = button.tag - 1
         if lvl - 1 >= 0 {
@@ -47,7 +48,7 @@ class Levels: UIViewController {
             next = levels[lvl + 1].completed
         }
         button.isEnabled = true
-        if curr {
+        if curr || bypass {
             button.setTitleColor(UIColor.systemGreen, for: .normal)
         } else if prev && !next {
             button.setTitleColor(UIColor.link, for: .normal)
@@ -84,13 +85,21 @@ class Levels: UIViewController {
             i.removeFromSuperview()
         }
         
+        var bypass = false
+        if setCompleted(forDate: targetDate) {
+            dateLabel.textColor = .systemGreen
+            bypass = true
+        } else {
+            dateLabel.textColor = .label
+        }
+        
         for i in 1...levels.count {
             let button = UIButton()
             button.setTitle("Level \(i)", for: .normal)
             button.heightAnchor.constraint(equalToConstant: 40).isActive = true
             
             button.tag = i
-            enableButton(button: button)
+            enableButton(button: button, bypass: bypass)
             
             button.layer.cornerRadius = 20
             button.layer.borderWidth = 2
@@ -100,25 +109,21 @@ class Levels: UIViewController {
             }), for: .touchUpInside)
             stackView.addArrangedSubview(button)
         }
+        
         stackView.layoutSubviews()
     }
     
     func updateButtonStates() {
         let startTime = UserDefaults.standard.double(forKey: "startDate")
         let startDate = Date(timeIntervalSince1970: startTime)
+        let endTime = UserDefaults.standard.double(forKey: "endDate")
+        let endDate = Date(timeIntervalSince1970: endTime)
         dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
-   
-        if targetDate.daysSince1970() - startDate.daysSince1970() > 0 {
-            leftButton.isEnabled = true
-        } else {
-            leftButton.isEnabled = false
-        }
         
-        if Date.now.daysSince1970() - targetDate.daysSince1970() >= 0 {
-            rightButton.isEnabled = true
-        } else {
-            rightButton.isEnabled = false
-        }
+        leftButton.isEnabled = targetDate.daysSince1970() - startDate.daysSince1970() > 0
+        rightButton.isEnabled = Date.now.daysSince1970() - targetDate.daysSince1970() > 0 && targetDate.daysSince1970() - endDate.daysSince1970() < 0
+        
+        layoutLevelStack()
     }
     
     @IBAction func rightButtonPressed(_ sender: Any) {

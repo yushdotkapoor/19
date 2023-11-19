@@ -104,7 +104,6 @@ class Level {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         
         for imgName in downloadQueue {
-            
             let fileURL = documentsDirectory.appendingPathComponent(self.dateString + imgName)
             StorageManager.shared.downloadURL(for: "\(self.dateString)/\(imgName)") { result in
                 switch result {

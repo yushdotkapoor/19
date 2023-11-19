@@ -16,15 +16,6 @@ class Login: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        ref.child("Users/sdfdsdf").getData { error, snapshot in
-            if error == nil {
-                if let _ = snapshot?.value as? NSNull {
-                    print("User does not exist yet")
-                }
-            } else {
-                print(error!)
-            }
-        }
         
         let signInButton = GIDSignInButton()
         signInButton.addAction(UIAction(handler: { action in
@@ -65,8 +56,8 @@ class Login: UIViewController {
                                 print("User does not exist yet")
                                 ref.child("Users/\(auth.currentUser!.uid)").setValue(["name": auth.currentUser!.displayName])
                                 self.source.welcomeSequence()
-                                self.navigationController?.popViewController(animated: true)
                             }
+                            self.navigationController?.popViewController(animated: true)
                         } else {
                             print(error!)
                         }

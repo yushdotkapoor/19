@@ -17,13 +17,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         FirebaseApp.configure()
         
-        ref.child("startDate").getData { error, snapshot in
-            if error != nil {
-                print(error!)
-            }
-            
-            if let snapshot = snapshot, let value = snapshot.value as? String, let dt = value.toDate(format: "yyyyMMdd") {
-                UserDefaults.standard.setValue(dt.timeIntervalSince1970, forKey: "startDate")
+        let datesToQuery = ["startDate", "endDate"]
+        for dtq in datesToQuery {
+            ref.child(dtq).getData { error, snapshot in
+                if error != nil {
+                    print(error!)
+                }
+                
+                if let snapshot = snapshot, let value = snapshot.value as? String, let dt = value.toDate(format: "yyyyMMdd") {
+                    UserDefaults.standard.setValue(dt.timeIntervalSince1970, forKey: dtq)
+                }
             }
         }
         

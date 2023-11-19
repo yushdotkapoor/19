@@ -13,15 +13,25 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         welcome.alpha = 0
-        // Do any additional setup after loading the view.
+        checkForLogin()
+        
+        welcomeSequence()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        checkForLogin()
+    }
+    
+    func checkForLogin() {
         if auth.currentUser == nil {
             let vc = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(identifier: "Login") as! Login
             vc.source = self
             self.navigationController?.pushViewController(vc, animated: true)
         }
-        
-        welcomeSequence()
     }
     
     func welcomeSequence() {
