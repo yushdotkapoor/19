@@ -173,6 +173,9 @@ class Game: UIViewController {
     
     func correctSolutionChosen() {
         UserDefaults.standard.setValue(true, forKey: "Level " + (String(level)))
+        levels[level - 1].completed = true
+        ref.child("Users").child(auth.currentUser!.uid).child("completion").child(targetDate.toString(format: "yyyyMMdd")).child(String(level - 1)).setValue(true)
+        
         let correctPopUp = CorrectPopUp(source: self)
         
         view.addSubview(correctPopUp)

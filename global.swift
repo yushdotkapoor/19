@@ -30,6 +30,24 @@ func downloadLevels(forDate dt: Date) {
         for lvl in levels {
             lvl.downloadImages()
         }
+        
+        updateCompletion(forDate: dt)
+    }
+}
+
+func updateCompletion(forDate dt: Date) {
+    ref.child("Users").child(auth.currentUser!.uid).child("completion").child(dt.toString(format: "yyyyMMdd")).getData { error, snapshot in
+        if error != nil {
+            print(error!)
+        }
+        
+        guard let snapshot = snapshot, let value = snapshot.value as? NSArray else { return }
+        let arr = JSON(value)
+        for i in arr {
+            guard let ind = Int(i.0), let completed = i.1.bool else { return }
+            levels[ind].completed = completed
+        }
+        
     }
 }
 
