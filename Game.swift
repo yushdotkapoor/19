@@ -36,6 +36,8 @@ class Game: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationController?.isNavigationBarHidden = false
+        
         persistantInitialize()
         initializeLevel()
         
@@ -133,20 +135,17 @@ class Game: UIViewController {
                 if ([.multipleChoice, .selection].contains(lvl.answerType) && !mc) || (lvl.answerType == .shortAnswer && !sa) {
                     // Incorrect solution
                     impact(style: .error)
-                    print("NO")
                     shakeForError()
                     return
                 }
             }
             //correct solution
-            print("yay")
             impact(style: .success)
             correctSolutionChosen()
             return
         }
         
         // incorrect solution
-        print("NO")
         impact(style: .error)
         shakeForError()
     }

@@ -16,8 +16,6 @@ class Levels: UIViewController {
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var dateLabel: UILabel!
     
-    let numLevels = levels.count
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -25,7 +23,7 @@ class Levels: UIViewController {
         
         dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
         
-        for i in 1...numLevels {
+        for i in 1...levels.count {
             let button = UIButton()
             button.setTitle("Level \(i)", for: .normal)
             button.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -47,15 +45,25 @@ class Levels: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
+        
+        navigationController?.isNavigationBarHidden = true
+        
         for button in getButton() {
             enableButton(button: button)
         }
     }
     
     func enableButton(button: UIButton) {
-        let prev = UserDefaults.standard.bool(forKey: "Level \(button.tag - 1)")
-        let curr = UserDefaults.standard.bool(forKey: "Level \(button.tag)")
-        let next = UserDefaults.standard.bool(forKey: "Level \(button.tag + 1)")
+        var prev = true
+        let lvl = button.tag - 1
+        if lvl - 1 >= 0 {
+            prev = levels[lvl - 1].completed
+        }
+        let curr = levels[lvl].completed
+        var next = false
+        if lvl + 1 < levels.count {
+            next = levels[lvl + 1].completed
+        }
         button.isEnabled = true
         if curr {
             button.setTitleColor(UIColor.systemGreen, for: .normal)

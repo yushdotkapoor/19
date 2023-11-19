@@ -14,6 +14,7 @@ class Level {
     var imageName: String?
     var questions: [Question]
     var options: [Option]
+    var completed: Bool
     
     init(answerType: AnswerType, imageName: String?=nil, questions: [Question], options: [Option]) {
         let correctOptions = options.filter({ $0.correct })
@@ -27,6 +28,7 @@ class Level {
         self.imageName = imageName
         self.questions = questions
         self.options = options
+        self.completed = false
     }
     
     convenience init(dict: JSON) {
@@ -36,11 +38,16 @@ class Level {
         }
         
         var options: [Option] = []
-        for optionDict in dict["option"].array! {
+        for optionDict in dict["options"].array! {
             options.append(Option(dict: optionDict))
         }
         
-        self.init(answerType: AnswerType.fromString(string: dict["answerType"].string!), imageName: dict["bodyImage"].string, questions: questions, options: options)
+        var imageName = dict["bodyImage"].string
+        if let i = imageName, i.isEmpty {
+            imageName = nil
+        }
+        
+        self.init(answerType: AnswerType.fromString(string: dict["answerType"].string!), imageName: imageName, questions: questions, options: options)
     }
     
     enum AnswerType {
@@ -171,7 +178,20 @@ class Option {
     }
     
     convenience init(dict: JSON) {
-        self.init(text: dict["text"].string ?? "", latex: dict["latex"].string ?? "", imageName: dict["image"].string ?? "", correct: dict["correct"].bool ?? false)
+        var text = dict["text"].string
+        if let i = text, i.isEmpty {
+            text = nil
+        }
+        var latex = dict["latex"].string
+        if let i = latex, i.isEmpty {
+            latex = nil
+        }
+        var imageName = dict["imageName"].string
+        if let i = imageName, i.isEmpty {
+            imageName = nil
+        }
+        
+        self.init(text: text, latex: latex , imageName: imageName, correct: dict["correct"].bool ?? false)
     }
     
     var image: UIImage? {

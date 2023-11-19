@@ -60,7 +60,7 @@ extension UIView {
         let maskLayer = CAShapeLayer()
         maskLayer.frame = bounds
         
-        let path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius)
+        let path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius / 2)
         maskLayer.path = path.cgPath
         
         return maskLayer
