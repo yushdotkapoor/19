@@ -146,7 +146,11 @@ class LevelAnswerStack: UIStackView {
                     letterLabel.text = String(Character(UnicodeScalar(i + 65)!))
                 }
                 if let buttonLabel = optionView.findView(withTag: 5) as? UILabel {
-                    buttonLabel.text = option.text
+                    if let text = option.text {
+                        buttonLabel.text = text
+                    } else {
+                        buttonLabel.isHidden = true
+                    }
                 }
                 if let latexLabel = optionView.findView(withTag: 8) as? MTMathUILabel {
                     if let latex = option.latex {

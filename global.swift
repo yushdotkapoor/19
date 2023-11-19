@@ -11,7 +11,14 @@ import SwiftyJSON
 
 var ref = Database.database().reference()
 let auth = Auth.auth()
-var levels: [Level] = []
+var levels: [Level] = [] {
+    didSet {
+        if levels.isEmpty { return }
+        if let topViewController = UIApplication.topViewController() as? Levels {
+            topViewController.layoutLevelStack()
+        }
+    }
+}
 
 
 func downloadLevels(forDate dt: Date) {
@@ -22,10 +29,12 @@ func downloadLevels(forDate dt: Date) {
         }
         
         guard let snapshot = snapshot, let value = snapshot.value as? NSArray else { return }
+        var tempLevels: [Level] = []
         for lvl in value {
             let lvl = JSON(lvl)
-            levels.append(Level(dict: lvl, date: dt))
+            tempLevels.append(Level(dict: lvl, date: dt))
         }
+        levels = tempLevels
         
         for lvl in levels {
             lvl.downloadImages()
@@ -36,7 +45,7 @@ func downloadLevels(forDate dt: Date) {
 }
 
 func updateCompletion(forDate dt: Date) {
-    ref.child("Users").child(auth.currentUser!.uid).child("completion").child(dt.toString(format: "yyyyMMdd")).getData { error, snapshot in
+    ref.child("Users").child(auth.currentUser!.uid).child("levelCompletion").child(dt.toString(format: "yyyyMMdd")).getData { error, snapshot in
         if error != nil {
             print(error!)
         }
@@ -48,6 +57,25 @@ func updateCompletion(forDate dt: Date) {
             levels[ind].completed = completed
         }
         
+        // This will casue the didSet function to be called
+        levels = levels
+    }
+    
+    ref.child("Users").child(auth.currentUser!.uid).child("setCompletion").getData { error, snapshot in
+        if error != nil {
+            print(error!)
+        }
+        
+        guard let snapshot = snapshot, let value = snapshot.value as? NSArray else { return }
+        let arr = JSON(value)
+        if var setsCompleted = UserDefaults.standard.dictionary(forKey: "setsCompleted") as? [String: Bool] {
+            for i in arr {
+                guard let completed = i.1.bool else { return }
+                setsCompleted[i.0] = completed
+            }
+            UserDefaults.standard.setValue(setsCompleted, forKey: "setsCompleted")
+        }
+       
     }
 }
 
@@ -79,3 +107,26 @@ func retrievePath(name: String) -> String? {
     return nil
 }
 
+
+extension UIApplication {
+    /**
+     Recursively gets the top UIViewController.
+     
+     - Parameters:
+     - base: The base ViewController, defaults as the root ViewController.
+     
+     - Returns: The sum of `a` and `b`.
+     */
+    class func topViewController(base: UIViewController? = UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController) -> UIViewController? {
+        if let nav = base as? UINavigationController {
+            return topViewController(base: nav.visibleViewController)
+            
+        } else if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
+            return topViewController(base: selected)
+            
+        } else if let presented = base?.presentedViewController {
+            return topViewController(base: presented)
+        }
+        return base
+    }
+}

@@ -21,13 +21,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if error != nil {
                 print(error!)
             }
+            
             if let snapshot = snapshot, let value = snapshot.value as? String, let dt = value.toDate(format: "yyyyMMdd") {
                 UserDefaults.standard.setValue(dt.timeIntervalSince1970, forKey: "startDate")
             }
         }
         
-        
-        downloadLevels(forDate: Date.now)
+        downloadLevels(forDate: targetDate)
         
         return true
     }

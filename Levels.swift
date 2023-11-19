@@ -24,26 +24,7 @@ class Levels: UIViewController {
         navigationController?.setViewControllers([self], animated: false)
         
         updateButtonStates()
-        
-        for i in 1...levels.count {
-            let button = UIButton()
-            button.setTitle("Level \(i)", for: .normal)
-            button.heightAnchor.constraint(equalToConstant: 40).isActive = true
-            
-            button.tag = i
-            enableButton(button: button)
-            
-            button.layer.cornerRadius = 20
-            button.layer.borderWidth = 2
-            
-            button.addAction(UIAction(handler: { _ in
-                self.buttonTapped(tag: i)
-            }), for: .touchUpInside)
-            stackView.addArrangedSubview(button)
-        }
-        stackView.layoutSubviews()
-        
-        
+        layoutLevelStack()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -98,12 +79,34 @@ class Levels: UIViewController {
         return buttons
     }
     
+    func layoutLevelStack() {
+        for i in stackView.subviews {
+            i.removeFromSuperview()
+        }
+        
+        for i in 1...levels.count {
+            let button = UIButton()
+            button.setTitle("Level \(i)", for: .normal)
+            button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            button.tag = i
+            enableButton(button: button)
+            
+            button.layer.cornerRadius = 20
+            button.layer.borderWidth = 2
+            
+            button.addAction(UIAction(handler: { _ in
+                self.buttonTapped(tag: i)
+            }), for: .touchUpInside)
+            stackView.addArrangedSubview(button)
+        }
+        stackView.layoutSubviews()
+    }
+    
     func updateButtonStates() {
         let startTime = UserDefaults.standard.double(forKey: "startDate")
         let startDate = Date(timeIntervalSince1970: startTime)
         dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
-        let dayBefore = Calendar.current.date(byAdding: .day, value: -1, to: targetDate)!
-        let dayAfter = Calendar.current.date(byAdding: .day, value: 1, to: targetDate)!
    
         if targetDate.daysSince1970() - startDate.daysSince1970() > 0 {
             leftButton.isEnabled = true
@@ -121,11 +124,13 @@ class Levels: UIViewController {
     @IBAction func rightButtonPressed(_ sender: Any) {
         targetDate = Calendar.current.date(byAdding: .day, value: 1, to: targetDate)!
         updateButtonStates()
+        downloadLevels(forDate: targetDate)
     }
     
     @IBAction func leftButtonPressed(_ sender: Any) {
         targetDate = Calendar.current.date(byAdding: .day, value: -1, to: targetDate)!
         updateButtonStates()
+        downloadLevels(forDate: targetDate)
     }
     
 }

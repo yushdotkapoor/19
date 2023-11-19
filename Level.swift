@@ -133,10 +133,8 @@ class Level {
                             UserDefaults.standard.setValue(dq, forKey: "downloadQueue")
                             
                             print("\(imgName) saved @ \(fileURL)")
-                            //                                completion(.success(data))
                         } catch {
                             print("Error when attempting to download data \(error.localizedDescription)")
-                            //                            completion(.failure(error))
                             return
                         }
                     }

@@ -158,7 +158,6 @@ class Game: UIViewController {
             }
         }
         
-        
         if let aView = answerStack.findView(withTag: 7) {
             views.append(aView)
         }
@@ -170,9 +169,13 @@ class Game: UIViewController {
     }
     
     func correctSolutionChosen() {
-        UserDefaults.standard.setValue(true, forKey: "Level " + (String(level)))
         levels[level - 1].completed = true
-        ref.child("Users").child(auth.currentUser!.uid).child("completion").child(targetDate.toString(format: "yyyyMMdd")).child(String(level - 1)).setValue(true)
+        ref.child("Users").child(auth.currentUser!.uid).child("levelCompletion").child(targetDate.toString(format: "yyyyMMdd")).child(String(level - 1)).setValue(true)
+        
+        if levels.count < level + 1 {
+            // completed set
+            ref.child("Users").child(auth.currentUser!.uid).child("setCompletion").child(targetDate.toString(format: "yyyyMMdd")).setValue(true)
+        }
         
         let correctPopUp = CorrectPopUp(source: self)
         
