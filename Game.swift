@@ -36,8 +36,6 @@ class Game: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationController?.isNavigationBarHidden = false
-        
         persistantInitialize()
         initializeLevel()
         
@@ -113,7 +111,7 @@ class Game: UIViewController {
         case .shortAnswer:
             correctAnswers = lvl.options
             if let textField = optionViews.last as? UITextField {
-                answers = [Option(text: textField.text)]
+                answers = [Option(text: textField.text, date: Date.now)]
             }
         case .multipleChoice, .selection:
             for optionView in optionViews {

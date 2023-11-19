@@ -19,7 +19,7 @@ class Levels: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationController?.isNavigationBarHidden = true
+        navigationController?.setViewControllers([self], animated: false)
         
         dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
         
@@ -34,7 +34,6 @@ class Levels: UIViewController {
             button.layer.cornerRadius = 20
             button.layer.borderWidth = 2
             
-            
             button.addAction(UIAction(handler: { _ in
                 self.buttonTapped(tag: i)
            }), for: .touchUpInside)
@@ -45,8 +44,6 @@ class Levels: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        
-        navigationController?.isNavigationBarHidden = true
         
         for button in getButton() {
             enableButton(button: button)

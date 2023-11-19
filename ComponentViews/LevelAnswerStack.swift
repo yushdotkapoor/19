@@ -54,7 +54,7 @@ class LevelAnswerStack: UIStackView {
             var hStack: UIStackView!
             var rows = 0
             
-            for _ in lvl.options {
+            for (i, _) in lvl.options.enumerated() {
                 let outerButtonView = UIView()
                 outerButtonView.layer.cornerRadius = 10
                 outerButtonView.layer.borderWidth = 2
@@ -127,6 +127,13 @@ class LevelAnswerStack: UIStackView {
                 }
                 
                 hStack.addArrangedSubview(outerButtonView)
+                
+                if n == 1 && i == lvl.options.count - 1 {
+                    let bufferView = UIView()
+                    
+                    hStack.addArrangedSubview(bufferView)
+                }
+                
                 hStack.layoutSubviews()
             }
             

@@ -23,30 +23,28 @@ class LevelBodyStack: UIStackView {
         let lvl = levels[source.level-1]
         for question in lvl.questions {
             switch question {
-            case .latex(string: let string):
+            case .latex(let string):
                 let questionLabel = MTMathUILabel()
                 questionLabel.latex = string
                 questionLabel.fontSize = 20.0
                 questionLabel.fitWithin(width: bounds.width)
                 
                 addArrangedSubview(questionLabel)
-            case .text(string: let string):
+            case .text(let string):
                 let questionLabel = UILabel()
                 questionLabel.text = string
                 questionLabel.numberOfLines = 0
                 questionLabel.font = questionLabel.font.withSize(20)
                 
                 addArrangedSubview(questionLabel)
+            case .image(_):
+                if let image = question.img {
+                    let questionImage = UIImageView()
+                    questionImage.image = image.aspectFittedToWidth(bounds.width)
+                    
+                    addArrangedSubview(questionImage)
+                }
             }
         }
-        
-        if let image = lvl.image {
-            let questionImage = UIImageView()
-            questionImage.image = image.aspectFittedToWidth(bounds.width)
-            
-            addArrangedSubview(questionImage)
-        }
     }
-    
-    
 }

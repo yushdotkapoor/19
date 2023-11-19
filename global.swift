@@ -24,7 +24,7 @@ func downloadLevels(forDate dt: Date) {
         guard let snapshot = snapshot, let value = snapshot.value as? NSArray else { return }
         for lvl in value {
             let lvl = JSON(lvl)
-            levels.append(Level(dict: lvl))
+            levels.append(Level(dict: lvl, date: dt))
         }
         
         for lvl in levels {
