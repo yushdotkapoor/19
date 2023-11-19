@@ -15,13 +15,15 @@ class Levels: UIViewController {
     
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var rightButton: UIButton!
+    @IBOutlet weak var leftButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationController?.setViewControllers([self], animated: false)
         
-        dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
+        updateButtonStates()
         
         for i in 1...levels.count {
             let button = UIButton()
@@ -36,10 +38,12 @@ class Levels: UIViewController {
             
             button.addAction(UIAction(handler: { _ in
                 self.buttonTapped(tag: i)
-           }), for: .touchUpInside)
+            }), for: .touchUpInside)
             stackView.addArrangedSubview(button)
         }
         stackView.layoutSubviews()
+        
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -92,6 +96,36 @@ class Levels: UIViewController {
         }
         
         return buttons
+    }
+    
+    func updateButtonStates() {
+        let startTime = UserDefaults.standard.double(forKey: "startDate")
+        let startDate = Date(timeIntervalSince1970: startTime)
+        dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
+        let dayBefore = Calendar.current.date(byAdding: .day, value: -1, to: targetDate)!
+        let dayAfter = Calendar.current.date(byAdding: .day, value: 1, to: targetDate)!
+   
+        if targetDate.daysSince1970() - startDate.daysSince1970() > 0 {
+            leftButton.isEnabled = true
+        } else {
+            leftButton.isEnabled = false
+        }
+        
+        if Date.now.daysSince1970() - targetDate.daysSince1970() >= 0 {
+            rightButton.isEnabled = true
+        } else {
+            rightButton.isEnabled = false
+        }
+    }
+    
+    @IBAction func rightButtonPressed(_ sender: Any) {
+        targetDate = Calendar.current.date(byAdding: .day, value: 1, to: targetDate)!
+        updateButtonStates()
+    }
+    
+    @IBAction func leftButtonPressed(_ sender: Any) {
+        targetDate = Calendar.current.date(byAdding: .day, value: -1, to: targetDate)!
+        updateButtonStates()
     }
     
 }

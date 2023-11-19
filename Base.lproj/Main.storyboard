@@ -91,6 +91,9 @@
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="arrow.backward" catalog="system"/>
+                                        <connections>
+                                            <action selector="leftButtonPressed:" destination="ngS-Hm-0ED" eventType="touchUpInside" id="O2x-se-4WY"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="20" translatesAutoresizingMaskIntoConstraints="NO" id="4va-d8-UHV">
                                         <rect key="frame" x="118.33333333333334" y="0.0" width="116.66666666666666" height="60"/>
@@ -105,6 +108,9 @@
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="arrow.forward" catalog="system"/>
+                                        <connections>
+                                            <action selector="rightButtonPressed:" destination="ngS-Hm-0ED" eventType="touchUpInside" id="E3X-wG-Fvv"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
@@ -125,6 +131,8 @@
                     </view>
                     <connections>
                         <outlet property="dateLabel" destination="4va-d8-UHV" id="sL6-GB-CaM"/>
+                        <outlet property="leftButton" destination="m89-yE-tJa" id="FzB-hZ-tJM"/>
+                        <outlet property="rightButton" destination="p6k-1q-veb" id="8DX-91-w3w"/>
                         <outlet property="stackView" destination="5eM-YJ-Lov" id="wNs-RU-1Wq"/>
                     </connections>
                 </viewController>

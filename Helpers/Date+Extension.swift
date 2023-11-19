@@ -15,4 +15,10 @@ extension Date {
         formatter.dateFormat = format
         return formatter.string(from: self)
     }
+    
+    func daysSince1970() -> Int {
+        let currentTimeZone = TimeZone.current
+        let timeZoneDifference = Double(currentTimeZone.secondsFromGMT())
+        return Int((self.timeIntervalSince1970 + timeZoneDifference) / 86400.0)
+    }
 }
