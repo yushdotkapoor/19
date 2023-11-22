@@ -12,7 +12,7 @@ import Firebase
 
 class Login: UIViewController {
     
-    var source: ViewController!
+    var delegate: ViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,7 +55,7 @@ class Login: UIViewController {
                             if let _ = snapshot?.value as? NSNull {
                                 print("User does not exist yet")
                                 ref.child("Users/\(auth.currentUser!.uid)").setValue(["name": auth.currentUser!.displayName])
-                                self.source.welcomeSequence()
+                                self.delegate.welcomeSequence()
                             }
                             self.navigationController?.popViewController(animated: true)
                         } else {

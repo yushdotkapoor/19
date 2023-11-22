@@ -34,6 +34,10 @@ class Levels: UIViewController {
         }
         
         dateLabel.textColor = setCompleted(forDate: targetDate) ? UIColor.systemGreen : .label
+        
+        dateLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleDateTap(_:)))
+        dateLabel.addGestureRecognizer(tap)
     }
     
     func enableButton(button: UIButton, bypass: Bool=false) {
@@ -81,7 +85,7 @@ class Levels: UIViewController {
     }
     
     func layoutLevelStack() {
-        for i in stackView.subviews {
+        for i in stackView.arrangedSubviews {
             i.removeFromSuperview()
         }
         
@@ -92,6 +96,8 @@ class Levels: UIViewController {
         } else {
             dateLabel.textColor = .label
         }
+        
+        if levels.isEmpty { return }
         
         for i in 1...levels.count {
             let button = UIButton()
@@ -118,24 +124,40 @@ class Levels: UIViewController {
         let startDate = Date(timeIntervalSince1970: startTime)
         let endTime = UserDefaults.standard.double(forKey: "endDate")
         let endDate = Date(timeIntervalSince1970: endTime)
-        dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
-        
-        leftButton.isEnabled = targetDate.daysSince1970() - startDate.daysSince1970() > 0
-        rightButton.isEnabled = Date.now.daysSince1970() - targetDate.daysSince1970() > 0 && targetDate.daysSince1970() - endDate.daysSince1970() < 0
-        
-        layoutLevelStack()
+        DispatchQueue.main.async { [self] in
+            dateLabel.text = targetDate.toString(format: "MMMM d, yyyy")
+            
+            leftButton.isEnabled = targetDate.daysSince1970() - startDate.daysSince1970() > 0
+            rightButton.isEnabled = Date.now.daysSince1970() - targetDate.daysSince1970() > 0 && targetDate.daysSince1970() - endDate.daysSince1970() < 0
+            
+            layoutLevelStack()
+        }
     }
     
     @IBAction func rightButtonPressed(_ sender: Any) {
         targetDate = Calendar.current.date(byAdding: .day, value: 1, to: targetDate)!
-        updateButtonStates()
         downloadLevels(forDate: targetDate)
+        updateButtonStates()
     }
     
     @IBAction func leftButtonPressed(_ sender: Any) {
         targetDate = Calendar.current.date(byAdding: .day, value: -1, to: targetDate)!
-        updateButtonStates()
         downloadLevels(forDate: targetDate)
+        updateButtonStates()
+    }
+    
+    @objc func handleDateTap(_ sender: UITapGestureRecognizer? = nil) {
+        let calendarPopupVC = CalendarViewController()
+        calendarPopupVC.delegate = self
+        
+        if let presentationController = calendarPopupVC.presentationController as? UISheetPresentationController {
+            presentationController.detents = [.medium()]
+        }
+        
+        calendarPopupVC.modalPresentationStyle = .pageSheet
+        self.present(calendarPopupVC, animated: true, completion: nil)
     }
     
 }
+
+

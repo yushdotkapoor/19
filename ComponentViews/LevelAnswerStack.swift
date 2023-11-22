@@ -19,8 +19,8 @@ class LevelAnswerStack: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupView(source: Game) {
-        let lvl = levels[source.level-1]
+    func setupView(delegate: Game) {
+        let lvl = levels[delegate.level-1]
         
         let commandLabel = UILabel()
         commandLabel.numberOfLines = 0
@@ -28,7 +28,7 @@ class LevelAnswerStack: UIStackView {
         
         insertArrangedSubview(commandLabel, at: 0)
         
-        source.optionViews = []
+        delegate.optionViews = []
         
         switch lvl.answerType {
         case .shortAnswer:
@@ -39,14 +39,15 @@ class LevelAnswerStack: UIStackView {
             textBox.returnKeyType = .done
             textBox.autocorrectionType = .no
             textBox.smartInsertDeleteType = .no
-            textBox.delegate = source
+            textBox.keyboardType = .numberPad
+            textBox.delegate = delegate
             textBox.tag = 7
             textBox.setLeftPaddingPoints(10)
             textBox.setRightPaddingPoints(10)
             
             textBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
             
-            source.optionViews.append(textBox)
+            delegate.optionViews.append(textBox)
             
             insertArrangedSubview(textBox, at: 1)
         case .multipleChoice, .selection:
@@ -59,7 +60,7 @@ class LevelAnswerStack: UIStackView {
                 outerButtonView.layer.cornerRadius = 10
                 outerButtonView.layer.borderWidth = 2
                 outerButtonView.layer.borderColor = UIColor.link.cgColor
-                let tap = UITapGestureRecognizer(target: source, action: #selector(source.handleMCTap(_:)))
+                let tap = UITapGestureRecognizer(target: delegate, action: #selector(delegate.handleMCTap(_:)))
                 outerButtonView.addGestureRecognizer(tap)
                 outerButtonView.isUserInteractionEnabled = true
                 
@@ -101,7 +102,7 @@ class LevelAnswerStack: UIStackView {
                 
                 buttonStack.addArrangedSubview(choiceStack)
                 
-                source.optionViews.append(outerButtonView)
+                delegate.optionViews.append(outerButtonView)
                 
                 buttonStack.translatesAutoresizingMaskIntoConstraints = false
                 outerButtonView.addSubview(buttonStack)
@@ -138,7 +139,7 @@ class LevelAnswerStack: UIStackView {
             }
             
             
-            for (i, optionView) in source.optionViews.enumerated() {
+            for (i, optionView) in delegate.optionViews.enumerated() {
                 let stackWidth = optionView.bounds.width - 30
                 
                 let option = lvl.options[i]

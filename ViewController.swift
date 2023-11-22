@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftMath
 
 class ViewController: UIViewController {
     
@@ -29,7 +30,7 @@ class ViewController: UIViewController {
     func checkForLogin() {
         if auth.currentUser == nil {
             let vc = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(identifier: "Login") as! Login
-            vc.source = self
+            vc.delegate = self
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

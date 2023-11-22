@@ -10,11 +10,11 @@ import UIKit
 
 class CorrectPopUp: UIView {
     
-    var source: Game?
+    var delegate: Game?
     
-    init(source: Game) {
+    init(delegate: Game) {
         super.init(frame: CGRect())
-        self.source = source
+        self.delegate = delegate
         setupView()
     }
     
@@ -23,7 +23,7 @@ class CorrectPopUp: UIView {
     }
     
     func setupView() {
-        guard let source = source else { return }
+        guard let delegate = delegate else { return }
         
         let h: CGFloat = 380
         let w: CGFloat = UIScreen.main.bounds.width - 100
@@ -60,9 +60,9 @@ class CorrectPopUp: UIView {
         nextButton.layer.borderColor = nextButton.titleLabel?.textColor.cgColor
         nextButton.layer.borderWidth = 2
         nextButton.addAction(UIAction(handler: { _ in
-            source.transitionLevel()
+            delegate.transitionLevel()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                source.view.removeBlurEffect()
+                delegate.view.removeBlurEffect()
                 self.removeFromSuperview()
             }
         }), for: .touchUpInside)
@@ -85,11 +85,11 @@ class CorrectPopUp: UIView {
     }
     
     func beginAnimation() {
-        guard let source = source else { return }
+        guard let delegate = delegate else { return }
         let timeConstant:Double = 0.5
         
-        source.view.addBlurEffect(style: .prominent, fadeDuration: timeConstant)
-        source.view.bringSubviewToFront(self)
+        delegate.view.addBlurEffect(style: .prominent, fadeDuration: timeConstant)
+        delegate.view.bringSubviewToFront(self)
         UIView.animate(withDuration: timeConstant) {
             self.alpha = 1
         }

@@ -9,11 +9,6 @@ import Foundation
 import UIKit
 import SwiftMath
 
-//var levels: [Level] = [
-//    Level(answerType: .shortAnswer, body: UIImage(), question: [Question.text(string: "what is the noble?")], options: [Option(text: "noble", image: UIImage(), correct: true)]),
-//    Level(answerType: .multipleChoice, body: UIImage.add, question: [Question.text(string: "what is the following:"), Question.latex(string: "\\neg(P\\land Q) \\iff (\\neg P)\\lor(\\neg Q)"), Question.text(string: "like what????")], options: [Option(text: "test 1", latex: "x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}"), Option(text: "test 2"), Option(text: "test 3"), Option(text: "test 4", correct: true)]),
-//]
-
 /*
  Tags:
     1 - levelLabel (top UILabel that displays level)
@@ -92,12 +87,12 @@ class Game: UIViewController {
     
     func initializeBody() {
         let bodyStack = getBodyStackView()
-        bodyStack.setupView(source: self)
+        bodyStack.setupView(delegate: self)
     }
     
     func initializeAnswers() {
         let answerStack = getAnswerStackView()
-        answerStack.setupView(source: self)
+        answerStack.setupView(delegate: self)
     }
     
     func submitPressed() {
@@ -184,7 +179,7 @@ class Game: UIViewController {
             }
         }
         
-        let correctPopUp = CorrectPopUp(source: self)
+        let correctPopUp = CorrectPopUp(delegate: self)
         
         view.addSubview(correctPopUp)
         
@@ -197,7 +192,7 @@ class Game: UIViewController {
     }
     
     func transitionLevel() {
-        let levelTransitionView = LevelTransitonView(source: self)
+        let levelTransitionView = LevelTransitonView(delegate: self)
         
         view.addSubview(levelTransitionView)
         

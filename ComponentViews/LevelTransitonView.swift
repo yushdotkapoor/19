@@ -10,7 +10,7 @@ import UIKit
 
 class LevelTransitonView: UIView {
     
-    var source: Game?
+    var delegate: Game?
     
     var secondLevelLabel: UILabel = {
         let lbl = UILabel()
@@ -30,9 +30,9 @@ class LevelTransitonView: UIView {
         return lbl
     }()
     
-    init(source: Game) {
+    init(delegate: Game) {
         super.init(frame: CGRect())
-        self.source = source
+        self.delegate = delegate
         setupView()
     }
     
@@ -42,16 +42,16 @@ class LevelTransitonView: UIView {
     
     
     func setupView() {
-        guard let source = source else { return }
+        guard let delegate = delegate else { return }
         
         backgroundColor = .systemBackground
         alpha = 0
         
-        firstLevelLabel.text = String(source.level)
+        firstLevelLabel.text = String(delegate.level)
         
         addSubview(firstLevelLabel)
         
-        secondLevelLabel.text = String(source.level + 1)
+        secondLevelLabel.text = String(delegate.level + 1)
         
         addSubview(secondLevelLabel)
         
@@ -66,7 +66,7 @@ class LevelTransitonView: UIView {
     }
     
     func beginAnimation() {
-        guard let source = source else { return }
+        guard let delegate = delegate else { return }
         let timeConstant:Double = 0.5
         let timeConstant2:Double = 0.7
         
@@ -85,9 +85,9 @@ class LevelTransitonView: UIView {
                                 self.firstLevelLabel.alpha = 0
                             } completion: { _ in
                                 DispatchQueue.main.asyncAfter(deadline: .now() + timeConstant2) {
-                                    source.clearView()
-                                    source.level += 1
-                                    source.initializeLevel()
+                                    delegate.clearView()
+                                    delegate.level += 1
+                                    delegate.initializeLevel()
                                     UIView.animate(withDuration: timeConstant) {
                                         self.alpha = 0
                                     } completion: { _ in

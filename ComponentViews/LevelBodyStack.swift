@@ -19,8 +19,8 @@ class LevelBodyStack: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupView(source: Game) {
-        let lvl = levels[source.level-1]
+    func setupView(delegate: Game) {
+        let lvl = levels[delegate.level-1]
         for question in lvl.questions {
             switch question {
             case .latex(let string):

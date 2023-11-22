@@ -60,7 +60,7 @@ class Level {
             case .multipleChoice:
                 return "Select ONLY ONE option:"
             case .shortAnswer:
-                return "Write your response:"
+                return "Write your response from 0-999 inclusive:"
             case .selection:
                 return "Pick ONE OR MORE options:"
             }
